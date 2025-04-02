@@ -24,10 +24,6 @@ function App() {
           <Route path="/admin-login" element={<AdminPage.LoginAdminPage/>}></Route>
         </Routes>
       </Layout>
-
-      <Routes>
-        <Route path="/admin-dashboard" element={<AdminPage.AdminDashboard/>}></Route>
-      </Routes>
     </Router>
   );
 }
