@@ -1,20 +1,45 @@
+/* === Import Tailwind & Fonts === */
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Ovo&display=swap');
 
-
+/* === Custom Font Face === */
 @font-face {
   font-family: 'Angela White';
-  src: url('/public/font/angelaWhite=.ttf') format('truetype');
+  src: url('/assets/font/angelaWhite.ttf') format('truetype'); /* Jangan pakai /public di path */
   font-weight: normal;
   font-style: normal;
 }
 
+/* === Base Layout === */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Nonaktifkan scroll secara global */
+}
 
 body {
   background-color: #f7f3ed;
+  font-family: 'Ovo', serif; /* Default font kalau mau */
 }
 
-
+/* === Font Utilities === */
 .font-ovo {
   font-family: 'Ovo', serif;
+}
+
+.font-angelaWhite {
+  font-family: 'Angela White', serif;
+}
+
+/* === Scrollbar Utility === */
+.scrollbar-none {
+  -ms-overflow-style: none;       /* IE & Edge */
+  scrollbar-width: none;          /* Firefox */
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;                  /* Chrome, Safari, Opera */
 }

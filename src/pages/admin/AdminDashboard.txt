@@ -1,0 +1,790 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "../../components/ui/Button";
+import { 
+  Clock, Users, FileText, PieChart, Bell, Settings, Edit, Trash2, 
+  Plus, Search, ChevronDown, ChevronUp, Eye, Filter, RefreshCw
+} from "lucide-react";
+
+export function AdminDashboard() {
+  // State for active tab
+  const [activeTab, setActiveTab] = useState("users");
+  
+  // State for sorting
+  const [sortConfig, setSortConfig] = useState({
+    key: "name",
+    direction: "ascending"
+  });
+  
+  // State for search term
+  const [searchTerm, setSearchTerm] = useState("");
+  
+  // State for selected user (for edit modal)
+  const [selectedUser, setSelectedUser] = useState(null);
+  
+  // State for modal visibility
+  const [showModal, setShowModal] = useState(false);
+  
+  // Dummy data for users
+  const [users, setUsers] = useState([
+    { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "Active", lastLogin: "Today, 10:30 AM" },
+    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Editor", status: "Active", lastLogin: "Yesterday, 3:15 PM" },
+    { id: 3, name: "Robert Johnson", email: "robert@example.com", role: "Viewer", status: "Inactive", lastLogin: "Apr 2, 2025" },
+    { id: 4, name: "Emily Davis", email: "emily@example.com", role: "Editor", status: "Active", lastLogin: "Today, 8:45 AM" },
+    { id: 5, name: "Michael Wilson", email: "michael@example.com", role: "Admin", status: "Active", lastLogin: "Yesterday, 11:20 AM" },
+  ]);
+  
+  // Dummy data for content
+  const [content, setContent] = useState([
+    { id: 1, title: "Getting Started Guide", category: "Tutorial", status: "Published", author: "John Doe", date: "Apr 3, 2025", views: 1245 },
+    { id: 2, title: "Product Features", category: "Marketing", status: "Draft", author: "Jane Smith", date: "Apr 2, 2025", views: 0 },
+    { id: 3, title: "Company Update", category: "News", status: "Published", author: "Michael Wilson", date: "Mar 30, 2025", views: 876 },
+    { id: 4, title: "How-To Tutorial", category: "Tutorial", status: "Published", author: "Emily Davis", date: "Mar 28, 2025", views: 2143 },
+    { id: 5, title: "Q1 Report", category: "Report", status: "Review", author: "Robert Johnson", date: "Mar 25, 2025", views: 342 },
+  ]);
+  
+  // Dummy data for analytics
+  const analyticsData = {
+    visitors: {
+      total: "12,543",
+      change: "+15%",
+      trend: "up"
+    },
+    pageViews: {
+      total: "45,216",
+      change: "+23%",
+      trend: "up"
+    },
+    users: {
+      total: "3,217",
+      change: "+8%",
+      trend: "up"
+    },
+    bounceRate: {
+      total: "42%",
+      change: "-5%",
+      trend: "down"
+    }
+  };
+  
+  // Dummy data for traffic sources
+  const trafficSources = [
+    { source: "Organic Search", percentage: 45 },
+    { source: "Direct", percentage: 25 },
+    { source: "Social Media", percentage: 18 },
+    { source: "Referral", percentage: 12 }
+  ];
+  
+  // Dummy data for popular pages
+  const popularPages = [
+    { page: "Home", views: 12453, percentage: 28 },
+    { page: "Products", views: 9876, percentage: 22 },
+    { page: "About Us", views: 6543, percentage: 15 },
+    { page: "Contact", views: 5432, percentage: 12 }
+  ];
+  
+  // Handle sorting
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+  
+  // Function to delete user
+  const handleDeleteUser = (id) => {
+    setUsers(users.filter(user => user.id !== id));
+  };
+  
+  // Function to open edit modal
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setShowModal(true);
+  };
+  
+  // Function to filter users based on search term
+  const filteredUsers = users.filter(user => 
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  // Function to filter content based on search term
+  const filteredContent = content.filter(item => 
+    item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    item.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Sort function
+  const getSortedItems = (items) => {
+    if (!sortConfig.key) return items;
+    
+    return [...items].sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === 'ascending' ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F7F3ED] to-[#F0EAE0]">
+      {/* Header with subtle shadow and improved spacing */}
+      <div className="flex justify-between items-center px-8 py-5 bg-gradient-to-r from-[#BAA485] to-[#C2AF93] text-white shadow-md">
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-normal" style={{ fontFamily: "'OVO', serif" }}>
+            Admin Dashboard
+          </h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4">
+            <button className="p-2 rounded-full hover:bg-white/10 transition-all relative">
+              <Bell size={20} />
+              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+            <button className="p-2 rounded-full hover:bg-white/10 transition-all">
+              <Settings size={20} />
+            </button>
+          </div>
+          <Link 
+            to="/" 
+            className="text-white text-sm sm:text-base hover:bg-white/10 px-4 py-2 rounded-md transition-all" 
+            style={{ fontFamily: "'OVO', serif" }}
+          >
+            Logout
+          </Link>
+        </div>
+      </div>
+
+      {/* Main content with improved spacing */}
+      <div className="p-6 sm:p-8 md:p-10 max-w-7xl mx-auto">
+        {/* Welcome section */}
+        <div className="mb-8">
+          <h2 className="text-xl sm:text-2xl text-[#5D4B35] font-normal" style={{ fontFamily: "'OVO', serif" }}>
+            Welcome to Dashboard
+          </h2>
+          <div className="flex items-center mt-2">
+            <Clock size={16} className="text-[#8A7A61] mr-2" />
+            <p className="text-sm text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>
+              Last login: Today, 10:30 AM
+            </p>
+          </div>
+        </div>
+
+        {/* Dashboard navigation tabs */}
+        <div className="flex mb-6 border-b border-[#C2AF93]">
+          <button 
+            className={`px-4 py-3 text-sm font-medium transition-colors flex items-center gap-2 ${activeTab === "users" ? "text-[#5D4B35] border-b-2 border-[#BAA485]" : "text-[#8A7A61] hover:text-[#5D4B35]"}`}
+            onClick={() => setActiveTab("users")}
+            style={{ fontFamily: "'OVO', serif" }}
+          >
+            <Users size={18} />
+            <span>User Management</span>
+          </button>
+          <button 
+            className={`px-4 py-3 text-sm font-medium transition-colors flex items-center gap-2 ${activeTab === "content" ? "text-[#5D4B35] border-b-2 border-[#BAA485]" : "text-[#8A7A61] hover:text-[#5D4B35]"}`}
+            onClick={() => setActiveTab("content")}
+            style={{ fontFamily: "'OVO', serif" }}
+          >
+            <FileText size={18} />
+            <span>Content Management</span>
+          </button>
+          <button 
+            className={`px-4 py-3 text-sm font-medium transition-colors flex items-center gap-2 ${activeTab === "analytics" ? "text-[#5D4B35] border-b-2 border-[#BAA485]" : "text-[#8A7A61] hover:text-[#5D4B35]"}`}
+            onClick={() => setActiveTab("analytics")}
+            style={{ fontFamily: "'OVO', serif" }}
+          >
+            <PieChart size={18} />
+            <span>Analytics</span>
+          </button>
+        </div>
+
+        {/* Search and filter bar */}
+        <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
+          <div className="relative flex-grow max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={18} className="text-[#8A7A61]" />
+            </div>
+            <input
+              type="text"
+              className="pl-10 pr-4 py-2 w-full border border-[#C2AF93] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BAA485] bg-white"
+              placeholder={`Search ${activeTab === "users" ? "users" : activeTab === "content" ? "content" : "analytics"}...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ fontFamily: "'OVO', serif" }}
+            />
+          </div>
+          
+          <div className="flex gap-2">
+            <Button 
+              className="bg-white border border-[#C2AF93] text-[#5D4B35] hover:bg-[#F0EAE0] px-4 py-2 rounded-lg flex items-center gap-2"
+              style={{ fontFamily: "'OVO', serif" }}
+            >
+              <Filter size={18} />
+              <span>Filter</span>
+            </Button>
+            
+            <Button 
+              className="bg-[#BAA485] hover:bg-[#A89475] text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              style={{ fontFamily: "'OVO', serif" }}
+            >
+              <Plus size={18} />
+              <span>{activeTab === "users" ? "Add User" : activeTab === "content" ? "Add Content" : "Export Report"}</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Content based on active tab */}
+        {activeTab === "users" && (
+          <div className="bg-white border border-[#C2AF93] rounded-xl shadow-md overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-[#F0EAE0]">
+                  <tr>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("name")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Name</span>
+                        {sortConfig.key === "name" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("email")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Email</span>
+                        {sortConfig.key === "email" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("role")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Role</span>
+                        {sortConfig.key === "role" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("status")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Status</span>
+                        {sortConfig.key === "status" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("lastLogin")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Last Login</span>
+                        {sortConfig.key === "lastLogin" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider" style={{ fontFamily: "'OVO', serif" }}>
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E5DFD3]">
+                  {getSortedItems(filteredUsers).map((user) => (
+                    <tr key={user.id} className="hover:bg-[#F7F3ED] transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>
+                        {user.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>
+                        {user.email}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ fontFamily: "'OVO', serif" }}>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          user.role === "Admin" ? "bg-purple-100 text-purple-800" : 
+                          user.role === "Editor" ? "bg-blue-100 text-blue-800" : 
+                          "bg-gray-100 text-gray-800"
+                        }`}>
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ fontFamily: "'OVO', serif" }}>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          user.status === "Active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                        }`}>
+                          {user.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>
+                        {user.lastLogin}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5D4B35]">
+                        <div className="flex space-x-2">
+                          <button 
+                            className="p-1 hover:bg-[#E5DFD3] rounded-full transition-colors"
+                            onClick={() => handleEditUser(user)}
+                          >
+                            <Edit size={16} className="text-[#8A7A61]" />
+                          </button>
+                          <button 
+                            className="p-1 hover:bg-[#E5DFD3] rounded-full transition-colors"
+                            onClick={() => handleDeleteUser(user.id)}
+                          >
+                            <Trash2 size={16} className="text-[#8A7A61]" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="px-6 py-3 bg-[#F0EAE0] text-sm text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>
+              Showing {filteredUsers.length} of {users.length} users
+            </div>
+          </div>
+        )}
+
+        {activeTab === "content" && (
+          <div className="bg-white border border-[#C2AF93] rounded-xl shadow-md overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead className="bg-[#F0EAE0]">
+                  <tr>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("title")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Title</span>
+                        {sortConfig.key === "title" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("category")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Category</span>
+                        {sortConfig.key === "category" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("status")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Status</span>
+                        {sortConfig.key === "status" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("author")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Author</span>
+                        {sortConfig.key === "author" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("date")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Date</span>
+                        {sortConfig.key === "date" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider cursor-pointer hover:bg-[#E5DFD3]"
+                      onClick={() => requestSort("views")}
+                      style={{ fontFamily: "'OVO', serif" }}
+                    >
+                      <div className="flex items-center">
+                        <span>Views</span>
+                        {sortConfig.key === "views" && (
+                          sortConfig.direction === "ascending" ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-[#5D4B35] uppercase tracking-wider" style={{ fontFamily: "'OVO', serif" }}>
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E5DFD3]">
+                  {getSortedItems(filteredContent).map((item) => (
+                    <tr key={item.id} className="hover:bg-[#F7F3ED] transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>
+                        {item.title}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ fontFamily: "'OVO', serif" }}>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          item.category === "Tutorial" ? "bg-blue-100 text-blue-800" : 
+                          item.category === "Marketing" ? "bg-yellow-100 text-yellow-800" : 
+                          item.category === "News" ? "bg-green-100 text-green-800" : 
+                          "bg-gray-100 text-gray-800"
+                        }`}>
+                          {item.category}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm" style={{ fontFamily: "'OVO', serif" }}>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          item.status === "Published" ? "bg-green-100 text-green-800" : 
+                          item.status === "Draft" ? "bg-gray-100 text-gray-800" : 
+                          "bg-orange-100 text-orange-800"
+                        }`}>
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>
+                        {item.author}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>
+                        {item.date}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>
+                        {item.views.toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-[#5D4B35]">
+                        <div className="flex space-x-2">
+                          <button className="p-1 hover:bg-[#E5DFD3] rounded-full transition-colors">
+                            <Eye size={16} className="text-[#8A7A61]" />
+                          </button>
+                          <button className="p-1 hover:bg-[#E5DFD3] rounded-full transition-colors">
+                            <Edit size={16} className="text-[#8A7A61]" />
+                          </button>
+                          <button className="p-1 hover:bg-[#E5DFD3] rounded-full transition-colors">
+                            <Trash2 size={16} className="text-[#8A7A61]" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="px-6 py-3 bg-[#F0EAE0] text-sm text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>
+              Showing {filteredContent.length} of {content.length} content items
+            </div>
+          </div>
+        )}
+
+        {activeTab === "analytics" && (
+          <div className="space-y-6">
+            {/* Analytics cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white border border-[#C2AF93] rounded-xl shadow-md p-4 hover:shadow-lg transition-all">
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-sm text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>Total Visitors</p>
+                    <h3 className="text-2xl font-semibold text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>{analyticsData.visitors.total}</h3>
+                  </div>
+                  <div className={`${analyticsData.visitors.trend === "up" ? "text-green-500" : "text-red-500"} flex items-center`}>
+                    {analyticsData.visitors.trend === "up" ? 
+                      <ChevronUp size={24} /> : 
+                      <ChevronDown size={24} />
+                    }
+                    <span className="text-sm">{analyticsData.visitors.change}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white border border-[#C2AF93] rounded-xl shadow-md p-4 hover:shadow-lg transition-all">
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-sm text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>Page Views</p>
+                    <h3 className="text-2xl font-semibold text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>{analyticsData.pageViews.total}</h3>
+                  </div>
+                  <div className={`${analyticsData.pageViews.trend === "up" ? "text-green-500" : "text-red-500"} flex items-center`}>
+                    {analyticsData.pageViews.trend === "up" ? 
+                      <ChevronUp size={24} /> : 
+                      <ChevronDown size={24} />
+                    }
+                    <span className="text-sm">{analyticsData.pageViews.change}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white border border-[#C2AF93] rounded-xl shadow-md p-4 hover:shadow-lg transition-all">
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-sm text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>Total Users</p>
+                    <h3 className="text-2xl font-semibold text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>{analyticsData.users.total}</h3>
+                  </div>
+                  <div className={`${analyticsData.users.trend === "up" ? "text-green-500" : "text-red-500"} flex items-center`}>
+                    {analyticsData.users.trend === "up" ? 
+                      <ChevronUp size={24} /> : 
+                      <ChevronDown size={24} />
+                    }
+                    <span className="text-sm">{analyticsData.users.change}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white border border-[#C2AF93] rounded-xl shadow-md p-4 hover:shadow-lg transition-all">
+                <div className="flex justify-between">
+                  <div>
+                    <p className="text-sm text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>Bounce Rate</p>
+                    <h3 className="text-2xl font-semibold text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>{analyticsData.bounceRate.total}</h3>
+                  </div>
+                  <div className={`${analyticsData.bounceRate.trend === "down" ? "text-green-500" : "text-red-500"} flex items-center`}>
+                    {analyticsData.bounceRate.trend === "down" ? 
+                      <ChevronDown size={24} /> : 
+                      <ChevronUp size={24} />
+                    }
+                    <span className="text-sm">{analyticsData.bounceRate.change}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Traffic sources */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white border border-[#C2AF93] rounded-xl shadow-md p-6 hover:shadow-lg transition-all">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>Traffic Sources</h3>
+                  <button className="p-1 hover:bg-[#F0EAE0] rounded-full transition-colors">
+                    <RefreshCw size={16} className="text-[#8A7A61]" />
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  {trafficSources.map((source, index) => (
+                    <div key={index}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-[#5D4B35] font-medium" style={{ fontFamily: "'OVO', serif" }}>{source.source}</span>
+                        <span className="text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>{source.percentage}%</span>
+                      </div>
+                      <div className="w-full bg-[#F0EAE0] rounded-full h-2">
+                        <div
+                          className="bg-[#BAA485] h-2 rounded-full transition-all duration-500 ease-in-out"
+                          style={{ width: `${source.percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Popular pages */}
+              <div className="bg-white border border-[#C2AF93] rounded-xl shadow-md p-6 hover:shadow-lg transition-all">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-semibold text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>Popular Pages</h3>
+                  <button className="p-1 hover:bg-[#F0EAE0] rounded-full transition-colors">
+                    <RefreshCw size={16} className="text-[#8A7A61]" />
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  {popularPages.map((page, index) => (
+                    <div key={index} className="hover:bg-[#F7F3ED] p-2 rounded-lg cursor-pointer transition-colors">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-[#5D4B35] font-medium" style={{ fontFamily: "'OVO', serif" }}>{page.page}</span>
+                        <span className="text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>{page.views.toLocaleString()} views</span>
+                      </div>
+                      <div className="w-full bg-[#F0EAE0] rounded-full h-2">
+                        <div
+                          className="bg-[#BAA485] h-2 rounded-full transition-all duration-500 ease-in-out"
+                          style={{ width: `${page.percentage}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Visitor metrics */}
+            <div className="bg-white border border-[#C2AF93] rounded-xl shadow-md p-6 hover:shadow-lg transition-all">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>Visitor Metrics</h3>
+                <div className="flex gap-2">
+                  <button className="px-3 py-1 text-xs bg-[#F0EAE0] hover:bg-[#E5DFD3] text-[#8A7A61] rounded-full transition-colors" style={{ fontFamily: "'OVO', serif" }}>
+                    Day
+                  </button>
+                  <button className="px-3 py-1 text-xs bg-[#BAA485] text-white rounded-full transition-colors" style={{ fontFamily: "'OVO', serif" }}>
+                    Week
+                  </button>
+                  <button className="px-3 py-1 text-xs bg-[#F0EAE0] hover:bg-[#E5DFD3] text-[#8A7A61] rounded-full transition-colors" style={{ fontFamily: "'OVO', serif" }}>
+                    Month
+                  </button>
+                </div>
+              </div>
+              
+              {/* Chart placeholder */}
+              <div className="h-64 bg-[#F7F3ED] rounded-lg flex items-center justify-center">
+                <div className="text-center">
+                  <div className="h-40 flex items-end justify-center space-x-2 mb-4 px-4">
+                    {[40, 65, 45, 70, 85, 60, 55].map((height, index) => (
+                      <div
+                        key={index}
+                        className="w-8 bg-[#BAA485] hover:bg-[#A89475] rounded-t-md transition-all duration-300 cursor-pointer relative group"
+                        style={{ height: `${height}%` }}
+                      >
+                        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-[#5D4B35] text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                          {height * 120} visits
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between px-2 text-xs text-[#8A7A61]" style={{ fontFamily: "'OVO', serif" }}>
+                    <span>Mon</span>
+                    <span>Tue</span>
+                    <span>Wed</span>
+                    <span>Thu</span>
+                    <span>Fri</span>
+                    <span>Sat</span>
+                    <span>Sun</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* User Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4 transform transition-all">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>
+                Edit User
+              </h3>
+              <button 
+                className="p-1 hover:bg-[#F0EAE0] rounded-full transition-colors"
+                onClick={() => setShowModal(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#8A7A61]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#5D4B35] mb-1" style={{ fontFamily: "'OVO', serif" }}>
+                  Name
+                </label>
+                <input 
+                  type="text"
+                  className="w-full px-3 py-2 border border-[#C2AF93] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BAA485]"
+                  defaultValue={selectedUser?.name}
+                  style={{ fontFamily: "'OVO', serif" }}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-[#5D4B35] mb-1" style={{ fontFamily: "'OVO', serif" }}>
+                  Email
+                </label>
+                <input 
+                  type="email"
+                  className="w-full px-3 py-2 border border-[#C2AF93] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BAA485]"
+                  defaultValue={selectedUser?.email}
+                  style={{ fontFamily: "'OVO', serif" }}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-[#5D4B35] mb-1" style={{ fontFamily: "'OVO', serif" }}>
+                  Role
+                </label>
+                <select 
+                  className="w-full px-3 py-2 border border-[#C2AF93] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#BAA485] bg-white"
+                  defaultValue={selectedUser?.role}
+                  style={{ fontFamily: "'OVO', serif" }}
+                >
+                  <option>Admin</option>
+                  <option>Editor</option>
+                  <option>Viewer</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-[#5D4B35] mb-1" style={{ fontFamily: "'OVO', serif" }}>
+                  Status
+                </label>
+                <div className="flex gap-4">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="status" 
+                      className="form-radio text-[#BAA485] focus:ring-[#BAA485]" 
+                      defaultChecked={selectedUser?.status === "Active"}
+                    />
+                    <span className="ml-2 text-sm text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>Active</span>
+                  </label>
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="status" 
+                      className="form-radio text-[#BAA485] focus:ring-[#BAA485]" 
+                      defaultChecked={selectedUser?.status === "Inactive"}
+                    />
+                    <span className="ml-2 text-sm text-[#5D4B35]" style={{ fontFamily: "'OVO', serif" }}>Inactive</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3 mt-6">
+              <button 
+                className="px-4 py-2 border border-[#C2AF93] text-[#5D4B35] rounded-lg hover:bg-[#F0EAE0] transition-colors" 
+                onClick={() => setShowModal(false)}
+                style={{ fontFamily: "'OVO', serif" }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="px-4 py-2 bg-[#BAA485] text-white rounded-lg hover:bg-[#A89475] transition-colors" 
+                onClick={() => setShowModal(false)}
+                style={{ fontFamily: "'OVO', serif" }}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default AdminDashboard;
