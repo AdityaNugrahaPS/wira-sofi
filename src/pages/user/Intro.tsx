@@ -97,7 +97,9 @@ const Intro = () => {
               (e.target as HTMLButtonElement).style.backgroundColor = "#d4c4b0";
             }}
           >
-            <span className="relative z-10" onClick={() => navigate("/opening")}>Masuk</span>
+            <span className="relative z-10" onClick={() => navigate("/main")}>
+              Masuk
+            </span>
 
             {/* Button Shine Effect */}
             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 group-hover:animate-pulse"></div>
