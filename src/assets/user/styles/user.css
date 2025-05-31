@@ -1,0 +1,38 @@
+/* User-specific styles */
+.user-layout {
+  background-color: #ffffff;
+  padding: 20px;
+}
+
+/* Add styles for Intro-Opening positions */
+.intro-opening {
+  position: relative;
+}
+
+.kiri-atas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 4px;
+}
+
+.kiri-bawah {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 4px;
+}
+
+.kanan-atas {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 4px;
+}
+
+.kanan-bawah {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 4px;
+}
