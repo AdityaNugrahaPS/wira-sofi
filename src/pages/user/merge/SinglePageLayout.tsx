@@ -1,14 +1,14 @@
 
-import Gallery from "./Gallery";
-import Rsvp from "./Rsvp";
-import Bride from "./Bride";
-import Groom from "./Groom";
-import Invited from "./Invited";
-import Opening from "./Opening";
-import Quotes from "./Quotes";
-import Story from "./Story";
-import Thanks from "./Thanks";
-import "../../assets/user/styles/user.css";
+import Gallery from "../Gallery";
+import Rsvp from "../Rsvp";
+import Bride from "../Bride";
+import Groom from "../Groom";
+import Invited from "../Invited";
+import Opening from "../Opening";
+import Quotes from "../Quotes";
+import Story from "../Story";
+import Thanks from "../Thanks";
+import "../../../assets/user/styles/user.css"
 
 const SinglePageLayout = () => {
   return (

@@ -1,6 +1,6 @@
 import Intro from "../pages/user/Intro";
-import SinglePageLayout from "../pages/user/SinglePageLayout";
-import "../assets/user/styles/user.css";
+import SinglePageLayout from "../pages/user/merge/SinglePageLayout";
+import "../assets/user/styles/user.css"
 
 const userRoutes = [
   { path: '/', component: Intro },
