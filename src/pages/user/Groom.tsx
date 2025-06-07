@@ -1,4 +1,20 @@
+import { useWedding } from "../../contexts/WeddingContext";
+
 const Groom = () => {
+  const { weddingData, isLoading } = useWedding();
+  const groomSettings = weddingData.brideGroomSettings.groomSettings;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p style={{ color: "#644F44" }}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden"
@@ -63,18 +79,18 @@ const Groom = () => {
             <div className="w-20 h-px bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>
           </div>
           
-          <h2 
+          <h2
             className="text-3xl md:text-4xl font-light mb-4 tracking-wider"
             style={{ color: "#644F44" }}
           >
-            The Groom
+            {groomSettings.headerTitle}
           </h2>
-          
-          <p 
+
+          <p
             className="text-sm tracking-wide opacity-70 italic"
             style={{ color: "#644F44" }}
           >
-            "A gentle soul with strength and devotion"
+            "{groomSettings.headerSubtitle}"
           </p>
         </div>
 
@@ -92,27 +108,27 @@ const Groom = () => {
                 {/* Name section */}
                 <div className="mb-12">
                   <div className="mb-6">
-                    <span 
+                    <span
                       className="text-lg font-light tracking-wider opacity-70 block mb-2"
                       style={{ color: "#644F44" }}
                     >
-                      Calon Pengantin Pria
+                      {groomSettings.label}
                     </span>
-                    <h1 
+                    <h1
                       className="text-4xl md:text-5xl lg:text-6xl font-light mb-4"
-                      style={{ 
+                      style={{
                         color: "#644F44",
                         textShadow: "0 2px 8px rgba(100, 79, 68, 0.1)",
                         lineHeight: "1.1"
                       }}
                     >
-                      Wira
+                      {weddingData.couple.groomFirstName}
                     </h1>
-                    <h2 
+                    <h2
                       className="text-2xl md:text-3xl font-light opacity-80 tracking-wide"
                       style={{ color: "#644F44" }}
                     >
-                      Maulana
+                      {weddingData.couple.groomLastName}
                     </h2>
                   </div>
                   
@@ -126,40 +142,40 @@ const Groom = () => {
 
                 {/* Parents section */}
                 <div className="mb-10">
-                  <h3 
+                  <h3
                     className="text-lg font-medium mb-6 tracking-wide"
                     style={{ color: "#644F44" }}
                   >
-                    Putra dari
+                    {groomSettings.parentLabel}
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-blue-300 rounded-full mr-4 animate-pulse"></div>
-                      <span 
+                      <span
                         className="text-xl font-light tracking-wide"
                         style={{ color: "#644F44" }}
                       >
-                        Bapak Agata
+                        {groomSettings.fatherName}
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center justify-center my-3">
-                      <span 
+                      <span
                         className="text-lg opacity-60"
                         style={{ color: "#644F44" }}
                       >
                         &
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center">
                       <div className="w-2 h-2 bg-blue-300 rounded-full mr-4 animate-pulse delay-75"></div>
-                      <span 
+                      <span
                         className="text-xl font-light tracking-wide"
                         style={{ color: "#644F44" }}
                       >
-                        Ibu Ayaka
+                        {groomSettings.motherName}
                       </span>
                     </div>
                   </div>
@@ -192,8 +208,8 @@ const Groom = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 via-transparent to-cyan-100/20 z-10 rounded-2xl"></div>
                 
                 <img
-                  src="public/images/BrideGroom/Groom.jpg"
-                  alt="Wira Maulana - The Groom"
+                  src={groomSettings.photo}
+                  alt={`${weddingData.couple.groomFullName} - The Groom`}
                   className="relative z-10 w-full h-96 md:h-[28rem] lg:h-[32rem] object-cover rounded-2xl"
                 />
                 
@@ -223,11 +239,11 @@ const Groom = () => {
           <div className="relative inline-block">
             <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-xl"></div>
             <div className="relative z-10 px-8 py-6">
-              <p 
+              <p
                 className="text-lg italic font-light leading-relaxed"
                 style={{ color: "#644F44" }}
               >
-                "Cinta sejati adalah ketika kamu menemukan seseorang yang membuatmu menjadi versi terbaik dari dirimu"
+                "{groomSettings.quote}"
               </p>
               <div className="mt-4 flex items-center justify-center space-x-2">
                 <div className="w-6 h-px bg-gradient-to-r from-transparent via-blue-300 to-transparent"></div>

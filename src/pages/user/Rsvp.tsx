@@ -1,6 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useWedding } from "../../contexts/WeddingContext";
+import { useGuestName } from "../../hooks/useGuestName";
+import { RsvpResponse } from "../../types/wedding";
 
 const Rsvp = () => {
+  const { weddingData, updateRsvpSettings } = useWedding();
+  const { rsvpSettings } = weddingData;
+  const { displayName: guestName } = useGuestName();
+
+  // Check if RSVP is disabled
+  if (!rsvpSettings.isEnabled) {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #f8f6f3 0%, #f1ede8 50%, #ede7e0 100%)",
+          fontFamily: "Ovo, serif",
+        }}
+      >
+        <div className="relative z-10 text-center max-w-lg animate-fade-in">
+          <div className="mb-8">
+            <div className="w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full mx-auto mb-6 flex items-center justify-center">
+              <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+            </div>
+
+            <h2 className="text-3xl md:text-4xl font-light mb-4 tracking-wider" style={{ color: "#644F44" }}>
+              RSVP Ditutup
+            </h2>
+
+            <p className="text-lg leading-relaxed opacity-80 mb-6" style={{ color: "#644F44" }}>
+              Maaf, periode RSVP telah ditutup. Terima kasih atas perhatian Anda.
+            </p>
+
+            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-6 border border-white/80">
+              <p className="text-sm opacity-70" style={{ color: "#644F44" }}>
+                Untuk informasi lebih lanjut, silakan hubungi: {rsvpSettings.contactPhone}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,6 +55,16 @@ const Rsvp = () => {
     ceremony: false,
     reception: false
   });
+
+  // Pre-fill name from URL parameter
+  useEffect(() => {
+    if (guestName && guestName !== 'Tamu Undangan') {
+      setFormData(prev => ({
+        ...prev,
+        name: guestName
+      }));
+    }
+  }, [guestName]);
   
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,9 +81,29 @@ const Rsvp = () => {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulate API call
+
+    // Create new RSVP response
+    const newResponse: RsvpResponse = {
+      id: `rsvp_${Date.now()}`,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      attendance: formData.attendance as 'yes' | 'no',
+      guestCount: formData.guestCount,
+      dietaryRestrictions: formData.dietaryRestrictions,
+      message: formData.message,
+      ceremony: formData.ceremony,
+      reception: formData.reception,
+      submittedAt: new Date().toISOString(),
+      status: 'pending'
+    };
+
+    // Simulate API call and save to context
     setTimeout(() => {
+      // Add response to existing responses
+      const updatedResponses = [...rsvpSettings.responses, newResponse];
+      updateRsvpSettings({ responses: updatedResponses });
+
       setIsLoading(false);
       setIsSubmitted(true);
     }, 2000);
@@ -149,12 +222,15 @@ const Rsvp = () => {
           </div>
           
           <h1 className="text-4xl md:text-5xl font-light mb-6 tracking-wider" style={{ color: "#644F44" }}>
-            RSVP
+            {rsvpSettings.headerTitle}
           </h1>
-          
+
           <p className="text-lg leading-relaxed opacity-80 max-w-2xl mx-auto" style={{ color: "#644F44" }}>
-            Kehadiran dan doa restu Anda merupakan kebahagiaan bagi kami. 
-            Mohon konfirmasi kehadiran Anda sebelum tanggal 15 Desember 2024.
+            {rsvpSettings.headerSubtitle}
+          </p>
+
+          <p className="text-base leading-relaxed opacity-70 max-w-2xl mx-auto mt-4" style={{ color: "#644F44" }}>
+            {rsvpSettings.description} Deadline: {rsvpSettings.deadlineDate}.
           </p>
         </div>
 
@@ -303,7 +379,7 @@ const Rsvp = () => {
                             </svg>
                           )}
                         </div>
-                        <span style={{ color: "#644F44" }}>Akad Nikah (10:00 WIB)</span>
+                        <span style={{ color: "#644F44" }}>{rsvpSettings.ceremonyTime}</span>
                       </label>
                       
                       <label className="flex items-center p-3 rounded-lg bg-white/60 hover:bg-white/80 cursor-pointer transition-all duration-300">
@@ -321,7 +397,7 @@ const Rsvp = () => {
                             </svg>
                           )}
                         </div>
-                        <span style={{ color: "#644F44" }}>Resepsi (12:00 - 15:00 WIB)</span>
+                        <span style={{ color: "#644F44" }}>{rsvpSettings.receptionTime}</span>
                       </label>
                     </div>
                   </div>
@@ -406,17 +482,17 @@ const Rsvp = () => {
               Jika Anda mengalami kesulitan atau memiliki pertanyaan, silakan hubungi:
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6">
-              <a href="tel:+6281234567890" className="flex items-center text-sm hover:text-amber-600 transition-colors">
+              <a href={`tel:${rsvpSettings.contactPhone}`} className="flex items-center text-sm hover:text-amber-600 transition-colors">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                +62 812 3456 7890
+                {rsvpSettings.contactPhone}
               </a>
-              <a href="mailto:wedding@wirasofi.com" className="flex items-center text-sm hover:text-amber-600 transition-colors">
+              <a href={`mailto:${rsvpSettings.contactEmail}`} className="flex items-center text-sm hover:text-amber-600 transition-colors">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                wedding@wirasofi.com
+                {rsvpSettings.contactEmail}
               </a>
             </div>
           </div>

@@ -1,5 +1,21 @@
-  const Bride = () => {
+import { useWedding } from "../../contexts/WeddingContext";
+
+const Bride = () => {
+  const { weddingData, isLoading } = useWedding();
+  const brideSettings = weddingData.brideGroomSettings.brideSettings;
+
+  if (isLoading) {
     return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-600 mx-auto mb-4"></div>
+          <p style={{ color: "#644F44" }}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
       <div
         className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden"
         style={{
@@ -63,18 +79,18 @@
               <div className="w-20 h-px bg-gradient-to-r from-transparent via-rose-300 to-transparent"></div>
             </div>
             
-            <h2 
+            <h2
               className="text-3xl md:text-4xl font-light mb-4 tracking-wider"
               style={{ color: "#644F44" }}
             >
-              The Bride
+              {brideSettings.headerTitle}
             </h2>
-            
-            <p 
+
+            <p
               className="text-sm tracking-wide opacity-70 italic"
               style={{ color: "#644F44" }}
             >
-              "A beautiful soul with a heart full of love"
+              "{brideSettings.headerSubtitle}"
             </p>
           </div>
 
@@ -93,8 +109,8 @@
                   <div className="absolute inset-0 bg-gradient-to-br from-rose-100/20 via-transparent to-pink-100/20 z-10 rounded-2xl"></div>
                   
                   <img
-                    src="public/images/BrideGroom/bride.jpg"
-                    alt="Sofi Kumala - The Bride"
+                    src={brideSettings.photo}
+                    alt={`${weddingData.couple.brideFullName} - The Bride`}
                     className="relative z-10 w-full h-96 md:h-[28rem] lg:h-[32rem] object-cover rounded-2xl"
                   />
                   
@@ -130,27 +146,27 @@
                   {/* Name section */}
                   <div className="mb-12">
                     <div className="mb-6">
-                      <span 
+                      <span
                         className="text-lg font-light tracking-wider opacity-70 block mb-2"
                         style={{ color: "#644F44" }}
                       >
-                        Calon Pengantin Wanita
+                        {brideSettings.label}
                       </span>
-                      <h1 
+                      <h1
                         className="text-4xl md:text-5xl lg:text-6xl font-light mb-4"
-                        style={{ 
+                        style={{
                           color: "#644F44",
                           textShadow: "0 2px 8px rgba(100, 79, 68, 0.1)",
                           lineHeight: "1.1"
                         }}
                       >
-                        Sofi
+                        {weddingData.couple.brideFirstName}
                       </h1>
-                      <h2 
+                      <h2
                         className="text-2xl md:text-3xl font-light opacity-80 tracking-wide"
                         style={{ color: "#644F44" }}
                       >
-                        Kumala
+                        {weddingData.couple.brideLastName}
                       </h2>
                     </div>
                     
@@ -164,40 +180,40 @@
 
                   {/* Parents section */}
                   <div className="mb-10">
-                    <h3 
+                    <h3
                       className="text-lg font-medium mb-6 tracking-wide"
                       style={{ color: "#644F44" }}
                     >
-                      Putri dari
+                      {brideSettings.parentLabel}
                     </h3>
-                    
+
                     <div className="space-y-4">
                       <div className="flex items-center">
                         <div className="w-2 h-2 bg-rose-300 rounded-full mr-4 animate-pulse"></div>
-                        <span 
+                        <span
                           className="text-xl font-light tracking-wide"
                           style={{ color: "#644F44" }}
                         >
-                          Bapak Adit
+                          {brideSettings.fatherName}
                         </span>
                       </div>
-                      
+
                       <div className="flex items-center justify-center my-3">
-                        <span 
+                        <span
                           className="text-lg opacity-60"
                           style={{ color: "#644F44" }}
                         >
                           &
                         </span>
                       </div>
-                      
+
                       <div className="flex items-center">
                         <div className="w-2 h-2 bg-rose-300 rounded-full mr-4 animate-pulse delay-75"></div>
-                        <span 
+                        <span
                           className="text-xl font-light tracking-wide"
                           style={{ color: "#644F44" }}
                         >
-                          Ibu Shikimori
+                          {brideSettings.motherName}
                         </span>
                       </div>
                     </div>
@@ -223,11 +239,11 @@
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-xl"></div>
               <div className="relative z-10 px-8 py-6">
-                <p 
+                <p
                   className="text-lg italic font-light leading-relaxed"
                   style={{ color: "#644F44" }}
                 >
-                  "Cinta sejati dimulai ketika tidak ada yang diharapkan sebagai balasan"
+                  "{brideSettings.quote}"
                 </p>
                 <div className="mt-4 flex items-center justify-center space-x-2">
                   <div className="w-6 h-px bg-gradient-to-r from-transparent via-rose-300 to-transparent"></div>

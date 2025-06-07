@@ -9,9 +9,12 @@ import {
   MapPin,
   PartyPopper,
 } from "lucide-react";
+import { useGuestName } from "../../hooks/useGuestName";
 import "../../index.css";
 
 const NavBar = () => {
+  const { getCurrentGuestUrl } = useGuestName();
+
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `min-w-[64px] md:min-h-[80px] h-full flex flex-col items-center justify-center text-xs md:text-sm gap-1 px-2 py-2 rounded-xl transition-all duration-300 ${
       isActive
@@ -86,7 +89,7 @@ const NavBar = () => {
             )}
           </NavLink>
 
-          <NavLink to="/rsvp" className={linkClass}>
+          <NavLink to={getCurrentGuestUrl('/rsvp')} className={linkClass}>
             {({ isActive }) => (
               <>
                 <Mail className={iconClass(isActive)} />
@@ -104,7 +107,7 @@ const NavBar = () => {
             )}
           </NavLink>
 
-          <NavLink to="/thanks" className={linkClass}>
+          <NavLink to={getCurrentGuestUrl('/thanks')} className={linkClass}>
             {({ isActive }) => (
               <>
                 <PartyPopper className={iconClass(isActive)} />

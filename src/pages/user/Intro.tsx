@@ -1,9 +1,34 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useWedding } from "../../contexts/WeddingContext";
+import { useGuestName } from "../../hooks/useGuestName";
 
 const Intro = () => {
-  const [guestName] = useState("Bapak/Ibu Tamu Undangan");
+  const { weddingData, isLoading } = useWedding();
+  const { getCurrentGuestUrl, displayName: guestName } = useGuestName();
   const navigate = useNavigate();
+
+  // Optional: Handle legacy URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const guestParam = urlParams.get('guest');
+    if (guestParam) {
+      // Redirect to new URL format with guest name parameter
+      const decodedName = decodeURIComponent(guestParam);
+      navigate(`/main/${encodeURIComponent(decodedName.replace(/\s+/g, '-'))}`);
+    }
+  }, [navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p style={{ color: "#644F44" }}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -54,7 +79,7 @@ const Intro = () => {
                 textShadow: "0 2px 4px rgba(100, 79, 68, 0.1)",
               }}
             >
-              Wira
+              {weddingData.couple.groomFirstName}
             </h2>
 
             {/* Ampersand with decorative elements */}
@@ -76,8 +101,10 @@ const Intro = () => {
                 textShadow: "0 2px 4px rgba(100, 79, 68, 0.1)",
               }}
             >
-              Sofi
+              {weddingData.couple.brideFirstName}
             </h2>
+
+
           </div>
         </div>
 
@@ -97,7 +124,7 @@ const Intro = () => {
               (e.target as HTMLButtonElement).style.backgroundColor = "#d4c4b0";
             }}
           >
-            <span className="relative z-10" onClick={() => navigate("/main")}>
+            <span className="relative z-10" onClick={() => navigate(getCurrentGuestUrl('/main'))}>
               Masuk
             </span>
 

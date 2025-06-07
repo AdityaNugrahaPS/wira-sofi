@@ -1,4 +1,9 @@
+
+import { useWedding } from '../../contexts/WeddingContext';
+
 const Thanks = () => {
+  const { weddingData } = useWedding();
+  const { thanksSettings } = weddingData;
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden"
@@ -94,22 +99,22 @@ const Thanks = () => {
         {/* Main Thanks Content */}
         <div className="mb-16 animate-slide-up">
           {/* Main title */}
-          <h1 
+          <h1
             className="text-5xl md:text-6xl lg:text-7xl font-light mb-8 tracking-wider"
-            style={{ 
+            style={{
               color: "#644F44",
               textShadow: "0 4px 12px rgba(100, 79, 68, 0.1)",
             }}
           >
-            Thank You
+            {thanksSettings.headerTitle || "Thank You"}
           </h1>
-          
-          {/* Indonesian translation */}
-          <h2 
+
+          {/* Subtitle */}
+          <h2
             className="text-3xl md:text-4xl font-light mb-12 tracking-wide opacity-80"
             style={{ color: "#644F44" }}
           >
-            Terima Kasih
+            {thanksSettings.headerSubtitle || "Terima Kasih"}
           </h2>
           
           {/* Decorative separator */}
@@ -132,42 +137,75 @@ const Thanks = () => {
             
             {/* Content */}
             <div className="relative z-10 p-8 md:p-12">
-              <p 
+              <p
                 className="text-lg md:text-xl leading-relaxed mb-6 font-light"
                 style={{ color: "#644F44" }}
               >
-                Atas kehadiran, doa, dan restu yang telah diberikan dalam hari bahagia kami, 
-                kami mengucapkan terima kasih yang sebesar-besarnya.
+                {thanksSettings.mainMessage || "Atas kehadiran, doa, dan restu yang telah diberikan dalam hari bahagia kami, kami mengucapkan terima kasih yang sebesar-besarnya."}
               </p>
               
-              <p 
+              <p
                 className="text-base md:text-lg leading-relaxed opacity-80 italic"
                 style={{ color: "#644F44" }}
               >
-                Semoga keberkahan dan kebahagiaan senantiasa menyertai kita semua.
+                {thanksSettings.subMessage || "Semoga keberkahan dan kebahagiaan senantiasa menyertai kita semua."}
               </p>
               
               {/* Signature area */}
               <div className="mt-10 pt-8 border-t border-amber-200/50">
                 <div className="flex items-center justify-center space-x-4">
-                  <span 
-                    className="text-2xl md:text-3xl font-light tracking-wider"
-                    style={{ color: "#644F44" }}
-                  >
-                    Wira
-                  </span>
-                  <span 
-                    className="text-xl opacity-60"
-                    style={{ color: "#644F44" }}
-                  >
-                    &
-                  </span>
-                  <span 
-                    className="text-2xl md:text-3xl font-light tracking-wider"
-                    style={{ color: "#644F44" }}
-                  >
-                    Sofi
-                  </span>
+                  {thanksSettings.coupleNames ? (
+                    thanksSettings.coupleNames.includes('&') ? (
+                      <>
+                        <span
+                          className="text-2xl md:text-3xl font-light tracking-wider"
+                          style={{ color: "#644F44" }}
+                        >
+                          {thanksSettings.coupleNames.split('&')[0].trim()}
+                        </span>
+                        <span
+                          className="text-xl opacity-60"
+                          style={{ color: "#644F44" }}
+                        >
+                          &
+                        </span>
+                        <span
+                          className="text-2xl md:text-3xl font-light tracking-wider"
+                          style={{ color: "#644F44" }}
+                        >
+                          {thanksSettings.coupleNames.split('&')[1].trim()}
+                        </span>
+                      </>
+                    ) : (
+                      <span
+                        className="text-2xl md:text-3xl font-light tracking-wider"
+                        style={{ color: "#644F44" }}
+                      >
+                        {thanksSettings.coupleNames}
+                      </span>
+                    )
+                  ) : (
+                    <>
+                      <span
+                        className="text-2xl md:text-3xl font-light tracking-wider"
+                        style={{ color: "#644F44" }}
+                      >
+                        Wira
+                      </span>
+                      <span
+                        className="text-xl opacity-60"
+                        style={{ color: "#644F44" }}
+                      >
+                        &
+                      </span>
+                      <span
+                        className="text-2xl md:text-3xl font-light tracking-wider"
+                        style={{ color: "#644F44" }}
+                      >
+                        Sofi
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -185,17 +223,17 @@ const Thanks = () => {
           <div className="relative inline-block">
             <div className="absolute inset-0 bg-gradient-to-r from-amber-100/30 via-orange-100/40 to-rose-100/30 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative z-10 px-8 py-6">
-              <p 
+              <p
                 className="text-base md:text-lg italic font-light leading-relaxed"
                 style={{ color: "#644F44" }}
               >
-                "Barakallahu lakuma wa baraka alaikuma wa jama'a bainakuma fi khair"
+                "{thanksSettings.blessingQuoteArabic || "Barakallahu lakuma wa baraka alaikuma wa jama'a bainakuma fi khair"}"
               </p>
-              <p 
+              <p
                 className="text-sm mt-2 opacity-70"
                 style={{ color: "#644F44" }}
               >
-                Semoga Allah memberkati kalian dan menyatukan kalian dalam kebaikan
+                {thanksSettings.blessingQuoteTranslation || "Semoga Allah memberkati kalian dan menyatukan kalian dalam kebaikan"}
               </p>
             </div>
           </div>

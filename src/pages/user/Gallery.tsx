@@ -1,26 +1,44 @@
 import { useState } from "react";
+import { useWedding } from "../../contexts/WeddingContext";
+import { GalleryImage } from "../../types/wedding";
 
 const Gallery = () => {
-  const [selectedImage, setSelectedImage] = useState<null | { id: string; src: string; type: string; alt: string }>(null);
+  const { weddingData, isLoading } = useWedding();
+  const gallerySettings = weddingData.gallerySettings;
+
+  const [selectedImage, setSelectedImage] = useState<null | GalleryImage>(null);
   const [imageLoaded, setImageLoaded] = useState<Record<string, boolean>>({});
 
-  // Gallery images data
-  const galleryImages = [
-    // Landscape images
-    { id: 'L1', src: 'public/images/Gallery/L1.jpg', type: 'landscape', alt: 'Wedding Moment 1' },
-    { id: 'L2', src: 'public/images/Gallery/L2.jpg', type: 'landscape', alt: 'Wedding Moment 2' },
-    { id: 'L3', src: 'public/images/Gallery/L3.jpg', type: 'landscape', alt: 'Wedding Moment 3' },
-    // Square images
-    { id: 'K1', src: 'public/images/Gallery/K1.jpg', type: 'square', alt: 'Wedding Moment 4' },
-    { id: 'K2', src: 'public/images/Gallery/K2.jpg', type: 'square', alt: 'Wedding Moment 5' },
-    { id: 'K3', src: 'public/images/Gallery/K3.jpg', type: 'square', alt: 'Wedding Moment 6' },
-  ];
+  // Get active gallery images
+  const activeGalleryImages = gallerySettings.images.filter(image => image.isActive);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p style={{ color: "#644F44" }}>Loading gallery...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no active images, show default message
+  if (activeGalleryImages.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p style={{ color: "#644F44" }}>No gallery images available</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleImageLoad = (imageId: string) => {
     setImageLoaded(prev => ({ ...prev, [imageId]: true }));
   };
 
-  const openLightbox = (image: { id: string; src: string; type: string; alt: string }) => {
+  const openLightbox = (image: GalleryImage) => {
     setSelectedImage(image);
   };
 
@@ -76,18 +94,18 @@ const Gallery = () => {
             <div className="w-24 h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent"></div>
           </div>
           
-          <h1 
+          <h1
             className="text-4xl md:text-5xl lg:text-6xl font-light mb-6 tracking-wider"
             style={{ color: "#644F44" }}
           >
-            Our Gallery
+            {gallerySettings.headerTitle}
           </h1>
-          
-          <p 
+
+          <p
             className="text-lg tracking-wide opacity-70 italic max-w-2xl mx-auto leading-relaxed"
             style={{ color: "#644F44" }}
           >
-            "Setiap momen indah dalam perjalanan cinta kami, terabadikan dalam kenangan yang tak terlupakan"
+            "{gallerySettings.headerSubtitle}"
           </p>
           
           <div className="mt-8 flex items-center justify-center space-x-4">
@@ -100,7 +118,7 @@ const Gallery = () => {
         {/* Gallery Grid */}
         <div className="animate-fade-in-up">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {galleryImages.map((image, index) => (
+            {activeGalleryImages.map((image, index) => (
               <div 
                 key={image.id}
                 className={`relative group cursor-pointer animate-scale-in`}
@@ -157,11 +175,11 @@ const Gallery = () => {
           <div className="relative inline-block">
             <div className="absolute inset-0 bg-white/60 backdrop-blur-sm rounded-xl"></div>
             <div className="relative z-10 px-10 py-8">
-              <p 
+              <p
                 className="text-xl italic font-light leading-relaxed mb-4"
                 style={{ color: "#644F44" }}
               >
-                "Cinta adalah lukisan yang indah, dan setiap momen adalah sapuan kuas yang sempurna"
+                "{gallerySettings.bottomQuote}"
               </p>
               <div className="flex items-center justify-center space-x-3">
                 <div className="w-8 h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent"></div>
@@ -181,8 +199,8 @@ const Gallery = () => {
         >
           <div className="relative max-w-5xl max-h-full">
             <img
-              src={(selectedImage as { src: string }).src}
-              alt={(selectedImage as { alt: string }).alt}
+              src={selectedImage.src}
+              alt={selectedImage.alt}
               className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
             />
             <button

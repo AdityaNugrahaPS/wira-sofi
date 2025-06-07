@@ -1,7 +1,27 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useWedding } from "../../contexts/WeddingContext";
+import { useGuestName } from "../../hooks/useGuestName";
 
 const Opening = () => {
-  const [guestName] = useState("Bapak/Ibu Tamu Undangan");
+  const { weddingData, isLoading } = useWedding();
+  const { displayName: guestName } = useGuestName();
+
+  // Optional: Update context if needed for other components
+  // This is for backward compatibility
+  useEffect(() => {
+    // You can add logic here if other components still need the context
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p style={{ color: "#644F44" }}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -52,7 +72,7 @@ const Opening = () => {
                 textShadow: "0 2px 4px rgba(100, 79, 68, 0.1)",
               }}
             >
-              Wira
+              {weddingData.couple.groomFirstName}
             </h2>
 
             {/* Ampersand with decorative elements */}
@@ -74,10 +94,12 @@ const Opening = () => {
                 textShadow: "0 2px 4px rgba(100, 79, 68, 0.1)",
               }}
             >
-              Sofi
+              {weddingData.couple.brideFirstName}
             </h2>
           </div>
         </div>
+
+
 
         {/* Decorative Bottom Element */}
         <div className="mt-16 flex justify-center">

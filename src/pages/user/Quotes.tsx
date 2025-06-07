@@ -1,22 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useWedding } from "../../contexts/WeddingContext";
 
 const Quotes = () => {
-  const [currentQuote] = useState(0);
+  const { weddingData, isLoading } = useWedding();
+  const [currentQuote, setCurrentQuote] = useState(0);
 
-  const quotes = [
-    {
-      text: "Cinta sejati tidak pernah berakhir. Kekasih mungkin berpisah, tetapi mereka tidak pernah berpisah sepenuhnya",
-      author: "Paulo Coelho"
-    },
-    {
-      text: "Pernikahan adalah tentang menjadi tim. Anda akan menghadapi dunia bersama-sama",
-      author: "Anonymous"
-    },
-    {
-      text: "Dalam pernikahan, cinta bukanlah perasaan semata, tetapi keputusan untuk mencintai setiap hari",
-      author: "Gary Chapman"
+  // Get active quotes
+  const activeQuotes = weddingData.quotesSettings.quotes.filter(quote => quote.isActive);
+
+  // Auto-rotate quotes every 5 seconds if there are multiple quotes
+  useEffect(() => {
+    if (activeQuotes.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentQuote(prev => (prev + 1) % activeQuotes.length);
+      }, 5000);
+      return () => clearInterval(interval);
     }
-  ];
+  }, [activeQuotes.length]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p style={{ color: "#644F44" }}>Loading quotes...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no active quotes, show default message
+  if (activeQuotes.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p style={{ color: "#644F44" }}>No quotes available</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -63,18 +85,18 @@ const Quotes = () => {
             <div className="w-16 h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent"></div>
           </div>
           
-          <h2 
+          <h2
             className="text-3xl md:text-4xl font-light mb-4 tracking-wider"
             style={{ color: "#644F44" }}
           >
-            Words of Love
+            {weddingData.quotesSettings.headerTitle}
           </h2>
-          
-          <p 
+
+          <p
             className="text-sm tracking-wide opacity-70"
             style={{ color: "#644F44" }}
           >
-            Kata-kata indah tentang cinta dan pernikahan
+            {weddingData.quotesSettings.headerSubtitle}
           </p>
         </div>
 
@@ -88,7 +110,7 @@ const Quotes = () => {
               <div className="absolute -inset-1 bg-gradient-to-br from-amber-200 via-orange-200 to-rose-200 rounded-2xl blur-sm opacity-50"></div>
               
               <img
-                src="public/images/Quotes/quotes.jpg"
+                src={weddingData.quotesSettings.quotesImage}
                 alt="Wedding Quotes"
                 className="relative z-10 w-full h-80 md:h-96 object-cover rounded-2xl"
               />
@@ -126,7 +148,7 @@ const Quotes = () => {
                   className="text-lg md:text-xl leading-relaxed mb-6 italic"
                   style={{ color: "#644F44" }}
                 >
-                  {quotes[currentQuote].text}
+                  {activeQuotes[currentQuote].text}
                 </blockquote>
                 
                 {/* Author */}
@@ -136,7 +158,7 @@ const Quotes = () => {
                     className="text-sm font-medium not-italic tracking-wide"
                     style={{ color: "#644F44" }}
                   >
-                    {quotes[currentQuote].author}
+                    {activeQuotes[currentQuote].author}
                   </cite>
                 </div>
               </div>
@@ -158,11 +180,11 @@ const Quotes = () => {
             <div className="w-3 h-3 bg-amber-300 rounded-full animate-pulse delay-150"></div>
           </div>
           
-          <p 
+          <p
             className="text-sm opacity-60 tracking-wider"
             style={{ color: "#644F44" }}
           >
-            Love is the bridge between two hearts
+            {weddingData.quotesSettings.bottomMessage}
           </p>
         </div>
       </div>

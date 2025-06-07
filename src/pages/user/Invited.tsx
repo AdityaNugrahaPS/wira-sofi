@@ -1,17 +1,20 @@
 import { useState } from "react";
+import { useWedding } from "../../contexts/WeddingContext";
 
 const Invited = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(true);
+  const { weddingData } = useWedding();
+  const { invitedSettings } = weddingData;
 
   const venueDetails = {
-    name: "Gedung C Teknik, Universitas Riau",
-    address: "Jl. HR. Soebrantas, Simpang Baru, Kec. Tampan, Kota Pekanbaru, Riau",
-    date: "Jumat, 26 September 2025",
-    time: "12.00 WIB",
-    event: "Akad Nikah"
+    name: invitedSettings.venueName,
+    address: invitedSettings.venueAddress,
+    date: invitedSettings.eventDate,
+    time: invitedSettings.eventTime,
+    event: invitedSettings.eventName
   };
 
-  const googleMapsUrl = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.668857089829!2d101.35013931475436!3d0.4637126997291157!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31aa706cd2fd9b5f%3A0x7a4f8e4f4f4f4f4f!2sUniversitas%20Riau!5e0!3m2!1sen!2sid!4v1635123456789!5m2!1sen!2sid";
+  const googleMapsUrl = invitedSettings.googleMapsUrl;
 
   const handleDirections = () => {
     const encodedAddress = encodeURIComponent(venueDetails.address);
@@ -80,18 +83,18 @@ const Invited = () => {
             <div className="w-24 h-px bg-gradient-to-r from-transparent via-amber-300 to-transparent"></div>
           </div>
           
-          <h2 
+          <h2
             className="text-4xl md:text-5xl font-light mb-6 tracking-wider"
             style={{ color: "#644F44" }}
           >
-            You're Invited
+            {invitedSettings.headerTitle}
           </h2>
-          
-          <p 
+
+          <p
             className="text-lg tracking-wide opacity-70 italic"
             style={{ color: "#644F44" }}
           >
-            "We would be honored by your presence"
+            "{invitedSettings.headerSubtitle}"
           </p>
         </div>
 
@@ -108,11 +111,11 @@ const Invited = () => {
               <div className="relative z-10 p-10 md:p-12">
                 {/* Event Title */}
                 <div className="text-center mb-10">
-                  <h3 
+                  <h3
                     className="text-3xl font-light mb-4 tracking-wide"
                     style={{ color: "#644F44" }}
                   >
-                    Wedding Ceremony
+                    {invitedSettings.eventTitle}
                   </h3>
                   <div className="flex items-center justify-center">
                     <div className="w-12 h-px bg-gradient-to-r from-amber-300 to-transparent"></div>
@@ -262,23 +265,23 @@ const Invited = () => {
           <div className="relative inline-block">
             <div className="absolute inset-0 bg-white/60 backdrop-blur-sm rounded-2xl"></div>
             <div className="relative z-10 px-12 py-8">
-              <h3 
+              <h3
                 className="text-2xl font-light mb-4"
                 style={{ color: "#644F44" }}
               >
-                Save the Date
+                {invitedSettings.saveTheDateTitle}
               </h3>
-              <p 
+              <p
                 className="text-lg font-medium mb-2"
                 style={{ color: "#644F44" }}
               >
                 {venueDetails.date}
               </p>
-              <p 
+              <p
                 className="text-base opacity-70"
                 style={{ color: "#644F44" }}
               >
-                We can't wait to celebrate with you!
+                {invitedSettings.saveTheDateMessage}
               </p>
               
               <div className="mt-6 flex items-center justify-center space-x-3">

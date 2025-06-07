@@ -1,42 +1,33 @@
+import { useWedding } from "../../contexts/WeddingContext";
+
 const Story = () => {
-  const timelineData = [
-    {
-      year: "2019",
-      title: "First Meet",
-      date: "Agustus 2019",
-      description: "Kami pertama kali bertemu dalam Ospek Perkuliahan. Dalam masa kuliah kami hanya teman biasa.",
-      icon: "👫",
-      color: "from-amber-200 to-orange-200",
-      bgColor: "from-amber-100/20 to-orange-100/20"
-    },
-    {
-      year: "2020",
-      title: "Relationship",
-      date: "25 Februari 2020",
-      description: "Kami mengikat janji sebagai pasangan kekasih.",
-      icon: "💕",
-      color: "from-rose-200 to-pink-200",
-      bgColor: "from-rose-100/20 to-pink-100/20"
-    },
-    {
-      year: "2023",
-      title: "Engagement",
-      date: "25 Februari 2023",
-      description: "Lika-liku hubungan kami lalui bersama hingga kami memutuskan untuk bertunangan pada 25 Februari 2023.",
-      icon: "💍",
-      color: "from-purple-200 to-violet-200",
-      bgColor: "from-purple-100/20 to-violet-100/20"
-    },
-    {
-      year: "2025",
-      title: "Married",
-      date: "26 September 2025",
-      description: "Kami memutuskan untuk mengikat janji suci pernikahan pada 26 September 2025.",
-      icon: "👰🤵",
-      color: "from-emerald-200 to-teal-200",
-      bgColor: "from-emerald-100/20 to-teal-100/20"
-    }
-  ];
+  const { weddingData, isLoading } = useWedding();
+  const storySettings = weddingData.storySettings;
+
+  // Get active timeline items
+  const activeTimelineItems = storySettings.timelineItems.filter(item => item.isActive);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+          <p style={{ color: "#644F44" }}>Loading story...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no active timeline items, show default message
+  if (activeTimelineItems.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p style={{ color: "#644F44" }}>No story timeline available</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -100,21 +91,21 @@ const Story = () => {
             <div className="w-24 h-px bg-gradient-to-r from-transparent via-rose-300 to-transparent"></div>
           </div>
           
-          <h1 
+          <h1
             className="text-4xl md:text-5xl lg:text-6xl font-light mb-6 tracking-wider"
-            style={{ 
+            style={{
               color: "#644F44",
               textShadow: "0 2px 8px rgba(100, 79, 68, 0.1)"
             }}
           >
-            Our Story
+            {storySettings.headerTitle}
           </h1>
-          
-          <p 
+
+          <p
             className="text-lg md:text-xl tracking-wide opacity-70 italic max-w-2xl mx-auto leading-relaxed"
             style={{ color: "#644F44" }}
           >
-            Perjalanan cinta kami dimulai dari pertemuan sederhana hingga janji suci yang akan kami ikrarkan
+            {storySettings.headerSubtitle}
           </p>
           
           {/* Decorative line */}
@@ -131,9 +122,9 @@ const Story = () => {
           <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-200 via-rose-200 to-emerald-200 transform -translate-x-1/2 opacity-40 rounded-full"></div>
           
           {/* Timeline Items */}
-          {timelineData.map((item, index) => (
+          {activeTimelineItems.map((item, index) => (
             <div
-              key={index}
+              key={item.id}
               className={`relative mb-16 animate-fade-in-up`}
               style={{ animationDelay: `${0.5 + index * 0.3}s` }}
             >
